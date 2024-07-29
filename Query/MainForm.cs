@@ -5,142 +5,142 @@ using Base;
 using Query.Controls;
 using Query.Core;
 
-namespace Query {
-	partial class MainForm : Form {
-		private readonly CommandProcessor processor;
-		private readonly CommandHistory history;
+namespace Query;
 
-		private readonly Timer focusTimer;
-		private readonly KeyboardHook keyboardHook;
+sealed partial class MainForm : Form {
+	private readonly CommandProcessor processor;
+	private readonly CommandHistory history;
 
-		private bool isLoaded;
+	private readonly Timer focusTimer;
+	private readonly KeyboardHook keyboardHook;
 
-		public MainForm() {
-			InitializeComponent();
+	private bool isLoaded;
 
-			processor = new CommandProcessor {
-				SingleTokenProcessor = ProcessSingleToken
-			};
+	public MainForm() {
+		InitializeComponent();
 
-			processor.AddApp<AppCalc.App>();
-			processor.AddApp<AppConv.App>();
-			processor.AddApp<AppMeme.App>();
-			processor.AddApp<AppSys.App>();
+		processor = new CommandProcessor {
+			SingleTokenProcessor = ProcessSingleToken
+		};
 
-			history = new CommandHistory();
-			queryBox.Setup(history, str => queryLog.AddEntry(str, QueryHistoryLog.EntryType.Information));
+		processor.AddApp<AppCalc.App>();
+		processor.AddApp<AppConv.App>();
+		processor.AddApp<AppMeme.App>();
+		processor.AddApp<AppSys.App>();
 
-			keyboardHook = new KeyboardHook();
-			keyboardHook.Triggered += keyboardHook_Triggered;
+		history = new CommandHistory();
+		queryBox.Setup(history, str => queryLog.AddEntry(str, QueryHistoryLog.EntryType.Information));
 
-			focusTimer = new Timer {
-				Interval = 1
-			};
+		keyboardHook = new KeyboardHook();
+		keyboardHook.Triggered += keyboardHook_Triggered;
 
-			focusTimer.Tick += focusTimer_Tick;
+		focusTimer = new Timer {
+			Interval = 1
+		};
 
-			Disposed += MainForm_Disposed;
-			queryBox.CommandRan += queryBox_CommandRan;
+		focusTimer.Tick += focusTimer_Tick;
+
+		Disposed += MainForm_Disposed;
+		queryBox.CommandRan += queryBox_CommandRan;
+	}
+
+	private void SetShown(bool show) {
+		if (show) {
+			focusTimer.Start();
 		}
-
-		private void SetShown(bool show) {
-			if (show) {
-				focusTimer.Start();
-			}
-			else {
-				Hide();
-			}
+		else {
+			Hide();
 		}
+	}
 
-		private void MainForm_Shown(object sender, EventArgs e) {
-			Rectangle screenRect = Screen.PrimaryScreen.WorkingArea;
-			Location = new Point(screenRect.X + screenRect.Width - Width, screenRect.Y + screenRect.Height - Height);
+	private void MainForm_Shown(object sender, EventArgs e) {
+		Rectangle screenRect = Screen.PrimaryScreen.WorkingArea;
+		Location = new Point(screenRect.X + screenRect.Width - Width, screenRect.Y + screenRect.Height - Height);
 
-			if (!isLoaded) {
-				isLoaded = true;
-				keyboardHook.StartHook();
-			}
-		}
-
-		private void MainForm_Deactivate(object sender, EventArgs e) {
-			SetShown(false);
-		}
-
-		private void MainForm_Disposed(object sender, EventArgs e) {
-			keyboardHook.StopHook();
-		}
-
-		private void trayIcon_Click(object sender, EventArgs e) {
-			if (((MouseEventArgs) e).Button == MouseButtons.Left) {
-				SetShown(true);
-			}
-		}
-
-		private void showToolStripMenuItem_Click(object sender, EventArgs e) {
-			SetShown(true);
-		}
-
-		private void hookToolStripMenuItem_Click(object sender, EventArgs e) {
-			keyboardHook.StopHook();
+		if (!isLoaded) {
+			isLoaded = true;
 			keyboardHook.StartHook();
 		}
+	}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
-			Application.Exit();
+	private void MainForm_Deactivate(object sender, EventArgs e) {
+		SetShown(false);
+	}
+
+	private void MainForm_Disposed(object sender, EventArgs e) {
+		keyboardHook.StopHook();
+	}
+
+	private void trayIcon_Click(object sender, EventArgs e) {
+		if (((MouseEventArgs) e).Button == MouseButtons.Left) {
+			SetShown(true);
 		}
+	}
 
-		private void keyboardHook_Triggered(object sender, EventArgs e) {
-			SetShown(!Visible);
-		}
+	private void showToolStripMenuItem_Click(object sender, EventArgs e) {
+		SetShown(true);
+	}
 
-		private void focusTimer_Tick(object sender, EventArgs e) {
-			WindowState = FormWindowState.Minimized;
-			Show();
-			Activate();
-			WindowState = FormWindowState.Normal;
+	private void hookToolStripMenuItem_Click(object sender, EventArgs e) {
+		keyboardHook.StopHook();
+		keyboardHook.StartHook();
+	}
 
-			queryBox.Focus();
-			focusTimer.Stop();
-		}
+	private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
+		Application.Exit();
+	}
 
-		private void queryBox_CommandRan(object sender, CommandEventArgs e) {
-			try {
-				string result = processor.Run(e.Command);
+	private void keyboardHook_Triggered(object sender, EventArgs e) {
+		SetShown(!Visible);
+	}
 
-				if (result != null) {
-					queryLog.AddEntry("> " + e.Command.Text, QueryHistoryLog.EntryType.UserInput);
-					history.AddQuery(e.Command.Text);
+	private void focusTimer_Tick(object sender, EventArgs e) {
+		WindowState = FormWindowState.Minimized;
+		Show();
+		Activate();
+		WindowState = FormWindowState.Normal;
 
-					queryLog.AddEntry(result, QueryHistoryLog.EntryType.CommandResult);
-					history.AddResult(result);
-				}
-			} catch (CommandException ex) {
+		queryBox.Focus();
+		focusTimer.Stop();
+	}
+
+	private void queryBox_CommandRan(object sender, CommandEventArgs e) {
+		try {
+			string result = processor.Run(e.Command);
+
+			if (result != null) {
 				queryLog.AddEntry("> " + e.Command.Text, QueryHistoryLog.EntryType.UserInput);
 				history.AddQuery(e.Command.Text);
 
-				queryLog.AddEntry(ex.Message, QueryHistoryLog.EntryType.Error);
+				queryLog.AddEntry(result, QueryHistoryLog.EntryType.CommandResult);
+				history.AddResult(result);
 			}
+		} catch (CommandException ex) {
+			queryLog.AddEntry("> " + e.Command.Text, QueryHistoryLog.EntryType.UserInput);
+			history.AddQuery(e.Command.Text);
+
+			queryLog.AddEntry(ex.Message, QueryHistoryLog.EntryType.Error);
 		}
+	}
 
-		private bool ProcessSingleToken(string token) {
-			switch (token) {
-				case "exit":
-				case "quit":
-					Application.Exit();
-					return true;
+	private bool ProcessSingleToken(string token) {
+		switch (token) {
+			case "exit":
+			case "quit":
+				Application.Exit();
+				return true;
 
-				case "clear":
-					queryLog.ClearEntries();
-					history.Clear();
-					return true;
+			case "clear":
+				queryLog.ClearEntries();
+				history.Clear();
+				return true;
 
-				case "hide":
-					Hide();
-					return true;
+			case "hide":
+				Hide();
+				return true;
 
-				default:
-					return false;
-			}
+			default:
+				return false;
 		}
 	}
 }

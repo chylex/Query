@@ -1,31 +1,33 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using AppConv.General;
 using AppConv.Utils;
 
-namespace AppConv.Units {
-	class Storage : DecimalUnitConverterSimple<Storage.Units> {
-		internal enum Units {
-			Invalid = 0,
-			Byte,
-			Bit
-		}
+namespace AppConv.Units;
 
-		public Storage() {
-			AddUnit(Units.Byte, "B", "byte", "bytes");
-			AddUnit(Units.Bit, "b", "bit", "bits");
+sealed class Storage : DecimalUnitConverterSimple<Storage.Units> {
+	internal enum Units {
+		Invalid = 0,
+		Byte,
+		Bit
+	}
 
-			SetUnitFactor(Units.Bit, 8M);
+	[SuppressMessage("ReSharper", "PossibleLossOfFraction")]
+	public Storage() {
+		AddUnit(Units.Byte, "B", "byte", "bytes");
+		AddUnit(Units.Bit, "b", "bit", "bits");
 
-			SetInvalidUnitObject(Units.Invalid);
+		SetUnitFactor(Units.Bit, 8M);
 
-			var bitConversionProperties = new SI.ExtededProperties {
-				FactorPredicate = factor => factor > 0 && factor % 3 == 0,
-				FromFunctionGenerator = exponent => () => (decimal) Math.Pow(1024, -(int) (exponent / 3)),
-				ToFunctionGenerator = exponent => () => (decimal) Math.Pow(1024, (int) (exponent / 3))
-			};
+		SetInvalidUnitObject(Units.Invalid);
 
-			SI.AddSupportCustom(typeof(Units), Units.Byte, new [] { "B" }, new [] { "byte", "bytes" }, ConvertFrom, ConvertTo, Names, bitConversionProperties);
-			SI.AddSupportCustom(typeof(Units), Units.Bit, new [] { "b" }, new [] { "bit", "bits" }, ConvertFrom, ConvertTo, Names, bitConversionProperties);
-		}
+		var bitConversionProperties = new SI.ExtededProperties {
+			FactorPredicate = static factor => factor > 0 && factor % 3 == 0,
+			FromFunctionGenerator = static exponent => () => (decimal) Math.Pow(1024, -(exponent / 3)),
+			ToFunctionGenerator = static exponent => () => (decimal) Math.Pow(1024, exponent / 3)
+		};
+
+		SI.AddSupportCustom(Units.Byte, [ "B" ], [ "byte", "bytes" ], ConvertFrom, ConvertTo, Names, bitConversionProperties);
+		SI.AddSupportCustom(Units.Bit, [ "b" ], [ "bit", "bits" ], ConvertFrom, ConvertTo, Names, bitConversionProperties);
 	}
 }

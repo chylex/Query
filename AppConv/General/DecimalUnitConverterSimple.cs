@@ -1,46 +1,45 @@
 ﻿using System;
 
-namespace AppConv.General {
-	abstract class DecimalUnitConverterSimple<T> : DecimalUnitConverterBase<T> where T : struct {
-		// ReSharper disable once StaticMemberInGenericType
-		private static readonly Func<decimal, decimal> FuncNoChange = val => val;
+namespace AppConv.General;
 
-		private readonly NameMap UnitNames = new NameMap();
-		private readonly DecimalFuncMap MapFrom = new DecimalFuncMap();
-		private readonly DecimalFuncMap MapTo = new DecimalFuncMap();
+abstract class DecimalUnitConverterSimple<T> : DecimalUnitConverterBase<T> where T : struct {
+	// ReSharper disable once StaticMemberInGenericType
+	private static readonly Func<decimal, decimal> FuncNoChange = static val => val;
 
-		private int invalidUnitObject = -1;
+	private readonly DecimalFuncMap MapFrom = new ();
+	private readonly DecimalFuncMap MapTo = new ();
 
-		protected sealed override NameMap Names => UnitNames;
+	private int invalidUnitObject = -1;
 
-		protected sealed override DecimalFuncMap ConvertFrom => MapFrom;
+	protected sealed override NameMap Names { get ; } = new ();
 
-		protected sealed override DecimalFuncMap ConvertTo => MapTo;
+	protected sealed override DecimalFuncMap ConvertFrom => MapFrom;
 
-		protected override int Precision => 3;
+	protected sealed override DecimalFuncMap ConvertTo => MapTo;
 
-		protected override bool CaseCheck => true;
+	protected override int Precision => 3;
 
-		protected void AddUnit(T unitObject, params string[] names) {
-			foreach (string name in names) {
-				UnitNames.Add(name, unitObject);
-			}
+	protected override bool CaseCheck => true;
 
-			ConvertFrom.Add(unitObject, FuncNoChange);
-			ConvertTo.Add(unitObject, FuncNoChange);
+	protected void AddUnit(T unitObject, params string[] names) {
+		foreach (string name in names) {
+			Names.Add(name, unitObject);
 		}
 
-		protected void SetUnitFactor(T unitObject, decimal factor) {
-			ConvertFrom[unitObject] = val => val * factor;
-			ConvertTo[unitObject] = val => val / factor;
-		}
+		ConvertFrom.Add(unitObject, FuncNoChange);
+		ConvertTo.Add(unitObject, FuncNoChange);
+	}
 
-		protected void SetInvalidUnitObject(T unitObject) {
-			invalidUnitObject = (int) (object) unitObject;
-		}
+	protected void SetUnitFactor(T unitObject, decimal factor) {
+		ConvertFrom[unitObject] = val => val * factor;
+		ConvertTo[unitObject] = val => val / factor;
+	}
 
-		protected sealed override bool IsValueInvalid(T value) {
-			return (int) (object) value == invalidUnitObject;
-		}
+	protected void SetInvalidUnitObject(T unitObject) {
+		invalidUnitObject = (int) (object) unitObject;
+	}
+
+	protected sealed override bool IsValueInvalid(T value) {
+		return (int) (object) value == invalidUnitObject;
 	}
 }

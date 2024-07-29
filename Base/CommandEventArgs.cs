@@ -1,11 +1,7 @@
 ﻿using System;
 
-namespace Base {
-	public class CommandEventArgs : EventArgs {
-		public Command Command { get; private set; }
+namespace Base;
 
-		public CommandEventArgs(string text) {
-			Command = new Command(text);
-		}
-	}
+public sealed class CommandEventArgs(string text) : EventArgs {
+	public Command Command { get; private set; } = new (text);
 }

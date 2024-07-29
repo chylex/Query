@@ -1,28 +1,18 @@
-﻿namespace AppCalc {
-	static class Operators {
-		internal static readonly string[] With2Operands = { "+", "-", "*", "/", "%", "^" };
+﻿namespace AppCalc;
 
-		internal static int GetPrecedence(string token) {
-			switch (token) {
-				case "^":
-					return 4;
+static class Operators {
+	internal static readonly string[] With2Operands = [ "+", "-", "*", "/", "%", "^" ];
 
-				case "*":
-				case "/":
-				case "%":
-					return 3;
+	internal static int GetPrecedence(string token) {
+		return token switch {
+			"^"               => 4,
+			"*" or "/" or "%" => 3,
+			"+" or "-"        => 2,
+			_                 => 1
+		};
+	}
 
-				case "+":
-				case "-":
-					return 2;
-
-				default:
-					return 1;
-			}
-		}
-
-		internal static bool IsRightAssociative(string token) {
-			return token == "^";
-		}
+	internal static bool IsRightAssociative(string token) {
+		return token == "^";
 	}
 }

@@ -1,29 +1,29 @@
 ﻿using AppConv.General;
 using AppConv.Utils;
 
-namespace AppConv.Units {
-	class Weight : DecimalUnitConverterSimple<Weight.Units> {
-		internal enum Units {
-			Invalid = 0,
-			Gram,
-			Pound,
-			Ounce,
-			Stone
-		}
+namespace AppConv.Units;
 
-		public Weight() {
-			AddUnit(Units.Gram, "g", "gram", "grams");
-			AddUnit(Units.Pound, "lb", "lbs", "pound", "pounds");
-			AddUnit(Units.Ounce, "oz", "ounce", "ounces");
-			AddUnit(Units.Stone, "st", "stone", "stones");
+sealed class Weight : DecimalUnitConverterSimple<Weight.Units> {
+	internal enum Units {
+		Invalid = 0,
+		Gram,
+		Pound,
+		Ounce,
+		Stone
+	}
 
-			SetUnitFactor(Units.Pound, 0.0022046226218M);
-			SetUnitFactor(Units.Ounce, 0.03527396195M);
-			SetUnitFactor(Units.Stone, 0.0001574730444177697M);
+	public Weight() {
+		AddUnit(Units.Gram, "g", "gram", "grams");
+		AddUnit(Units.Pound, "lb", "lbs", "pound", "pounds");
+		AddUnit(Units.Ounce, "oz", "ounce", "ounces");
+		AddUnit(Units.Stone, "st", "stone", "stones");
 
-			SetInvalidUnitObject(Units.Invalid);
+		SetUnitFactor(Units.Pound, 0.0022046226218M);
+		SetUnitFactor(Units.Ounce, 0.03527396195M);
+		SetUnitFactor(Units.Stone, 0.0001574730444177697M);
 
-			SI.AddSupport(typeof(Units), Units.Gram, new [] { "g" }, new [] { "gram", "grams" }, ConvertFrom, ConvertTo, Names);
-		}
+		SetInvalidUnitObject(Units.Invalid);
+
+		SI.AddSupport(Units.Gram, [ "g" ], [ "gram", "grams" ], ConvertFrom, ConvertTo, Names);
 	}
 }

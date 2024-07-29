@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 
-namespace Query.Core {
-	sealed class CommandHistory {
-		private readonly List<string> queries = new List<string>();
-		private readonly List<string> results = new List<string>();
+namespace Query.Core;
 
-		public IList<string> Queries => queries;
+sealed class CommandHistory {
+	private readonly List<string> queries = [];
+	private readonly List<string> results = [];
 
-		public IList<string> Results => results;
+	public IList<string> Queries => queries;
 
-		public void AddQuery(string text) {
-			queries.Add(text);
-		}
+	public IList<string> Results => results;
 
-		public void AddResult(string text) {
-			results.Add(text);
-		}
+	public void AddQuery(string text) {
+		queries.Add(text);
+	}
 
-		public void Clear() {
-			queries.Clear();
-			results.Clear();
-		}
+	public void AddResult(string text) {
+		results.Add(text);
+	}
+
+	public void Clear() {
+		queries.Clear();
+		results.Clear();
 	}
 }

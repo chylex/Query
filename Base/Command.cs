@@ -2,39 +2,35 @@
 using System.Text.RegularExpressions;
 using Base.Utils;
 
-namespace Base {
-	public sealed class Command {
-		private static readonly Regex RegexBalancedBrackets = new Regex(RegexUtils.Balance(@"\[", @"\]"), RegexOptions.Compiled);
-		private static readonly Regex RegexBalancedParentheses = new Regex(RegexUtils.Balance(@"\(", @"\)"), RegexOptions.Compiled);
+namespace Base;
 
-		public string Text { get; private set; }
+public sealed class Command(string text) {
+	private static readonly Regex RegexBalancedBrackets = new (RegexUtils.Balance(@"\[", @"\]"), RegexOptions.Compiled);
+	private static readonly Regex RegexBalancedParentheses = new (RegexUtils.Balance(@"\(", @"\)"), RegexOptions.Compiled);
 
-		public string PotentialAppName {
-			get {
-				int firstSpace = Text.IndexOf(' ');
+	public string Text { get; } = text;
 
-				if (firstSpace == -1) {
-					return null;
-				}
+	public string PotentialAppName {
+		get {
+			int firstSpace = Text.IndexOf(' ');
 
-				string firstToken = Text.Substring(0, firstSpace);
-
-				if (!firstToken.All(char.IsLetter)) {
-					return null;
-				}
-
-				return firstToken;
+			if (firstSpace == -1) {
+				return null;
 			}
-		}
 
-		public bool IsSingleToken => Text.IndexOf(' ') == -1;
+			string firstToken = Text[..firstSpace];
 
-		public Command(string text) {
-			Text = text;
-		}
+			if (!firstToken.All(char.IsLetter)) {
+				return null;
+			}
 
-		public Command ReplaceBrackets(MatchEvaluator evaluator) {
-			return new Command(RegexBalancedParentheses.Replace(RegexBalancedBrackets.Replace(Text, evaluator), evaluator));
+			return firstToken;
 		}
+	}
+
+	public bool IsSingleToken => !Text.Contains(' ');
+
+	public Command ReplaceBrackets(MatchEvaluator evaluator) {
+		return new Command(RegexBalancedParentheses.Replace(RegexBalancedBrackets.Replace(Text, evaluator), evaluator));
 	}
 }
