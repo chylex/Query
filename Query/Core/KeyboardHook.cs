@@ -2,63 +2,63 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace Query.Core{
-    sealed class KeyboardHook{
-        public event EventHandler Triggered;
-        
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private readonly NativeMethods.HookProc keyboardHookDelegate;
-        private IntPtr keyboardHook;
-        
-        public KeyboardHook(){
-            keyboardHookDelegate = KeyboardHookProc;
-        }
+namespace Query.Core {
+	sealed class KeyboardHook {
+		public event EventHandler Triggered;
 
-        public void StartHook(){
-            if (keyboardHook != IntPtr.Zero){
-                NativeMethods.UnhookWindowsHookEx(keyboardHook);
-            }
+		// ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+		private readonly NativeMethods.HookProc keyboardHookDelegate;
+		private IntPtr keyboardHook;
 
-            keyboardHook = NativeMethods.SetWindowsHookEx(NativeMethods.WH_KEYBOARD_LL, keyboardHookDelegate, IntPtr.Zero, 0);
-        }
+		public KeyboardHook() {
+			keyboardHookDelegate = KeyboardHookProc;
+		}
 
-        public void StopHook(){
-            if (keyboardHook != IntPtr.Zero){
-                NativeMethods.UnhookWindowsHookEx(keyboardHook);
-                keyboardHook = IntPtr.Zero;
-            }
-        }
+		public void StartHook() {
+			if (keyboardHook != IntPtr.Zero) {
+				NativeMethods.UnhookWindowsHookEx(keyboardHook);
+			}
 
-        private IntPtr KeyboardHookProc(int nCode, IntPtr wParam, IntPtr lParam){
-            if (wParam == (IntPtr)NativeMethods.WM_KEYDOWN){
-                Keys key = (Keys)Marshal.ReadInt32(lParam);
+			keyboardHook = NativeMethods.SetWindowsHookEx(NativeMethods.WH_KEYBOARD_LL, keyboardHookDelegate, IntPtr.Zero, 0);
+		}
 
-                if ((key == Keys.LWin || key == Keys.RWin) && Control.ModifierKeys.HasFlag(Keys.Control)){
-                    Triggered?.Invoke(this, EventArgs.Empty);
-                    return NativeMethods.HookHandled;
-                }
-            }
+		public void StopHook() {
+			if (keyboardHook != IntPtr.Zero) {
+				NativeMethods.UnhookWindowsHookEx(keyboardHook);
+				keyboardHook = IntPtr.Zero;
+			}
+		}
 
-            return NativeMethods.CallNextHookEx(keyboardHook, nCode, wParam, lParam);
-        }
+		private IntPtr KeyboardHookProc(int nCode, IntPtr wParam, IntPtr lParam) {
+			if (wParam == (IntPtr) NativeMethods.WM_KEYDOWN) {
+				Keys key = (Keys) Marshal.ReadInt32(lParam);
 
-        private static class NativeMethods{
-            public const int WH_KEYBOARD_LL = 13;
-            public const int WM_KEYDOWN = 0x0100;
-            public const int WM_KEYUP = 0x0101;
+				if ((key == Keys.LWin || key == Keys.RWin) && Control.ModifierKeys.HasFlag(Keys.Control)) {
+					Triggered?.Invoke(this, EventArgs.Empty);
+					return NativeMethods.HookHandled;
+				}
+			}
 
-            public static readonly IntPtr HookHandled = new IntPtr(-1);
+			return NativeMethods.CallNextHookEx(keyboardHook, nCode, wParam, lParam);
+		}
 
-            public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+		private static class NativeMethods {
+			public const int WH_KEYBOARD_LL = 13;
+			public const int WM_KEYDOWN = 0x0100;
+			public const int WM_KEYUP = 0x0101;
 
-            [DllImport("user32.dll")]
-            public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
+			public static readonly IntPtr HookHandled = new IntPtr(-1);
 
-            [DllImport("user32.dll")]
-            public static extern bool UnhookWindowsHookEx(IntPtr idHook);
+			public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-            [DllImport("user32.dll")]
-            public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
-        }
-    }
+			[DllImport("user32.dll")]
+			public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
+
+			[DllImport("user32.dll")]
+			public static extern bool UnhookWindowsHookEx(IntPtr idHook);
+
+			[DllImport("user32.dll")]
+			public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
+		}
+	}
 }

@@ -4,46 +4,46 @@ using AppConv.General;
 using AppConv.Units;
 using Base;
 
-namespace AppConv{
-    public sealed class App : IApp{
-        private static readonly IUnitType[] Processors = {
-            new Temperature(),
-            new Weight(),
-            new Length(),
-            new Area(),
-            new Volume(),
-            new Angle(),
-            new Storage(),
-            new Radix()
-        };
+namespace AppConv {
+	public sealed class App : IApp {
+		private static readonly IUnitType[] Processors = {
+			new Temperature(),
+			new Weight(),
+			new Length(),
+			new Area(),
+			new Volume(),
+			new Angle(),
+			new Storage(),
+			new Radix()
+		};
 
-        public string[] RecognizedNames => new string[]{
-            "conv",
-            "convert"
-        };
-        
-        public MatchConfidence GetConfidence(Command cmd){
-            return cmd.Text.IndexOf(" to ", StringComparison.InvariantCultureIgnoreCase) != -1 ? MatchConfidence.Possible : MatchConfidence.None;
-        }
+		public string[] RecognizedNames => new string[] {
+			"conv",
+			"convert"
+		};
 
-        public string ProcessCommand(Command cmd){
-            string[] data = cmd.Text.Split(new string[]{ " to " }, 2, StringSplitOptions.None);
+		public MatchConfidence GetConfidence(Command cmd) {
+			return cmd.Text.IndexOf(" to ", StringComparison.InvariantCultureIgnoreCase) != -1 ? MatchConfidence.Possible : MatchConfidence.None;
+		}
 
-            string src = data[0].Trim();
-            string dst = data[1].Trim();
+		public string ProcessCommand(Command cmd) {
+			string[] data = cmd.Text.Split(new string[] { " to " }, 2, StringSplitOptions.None);
 
-            if (src.Length == 0 || dst.Length == 0){
-                throw new CommandException("Unrecognized conversion app syntax.");
-            }
+			string src = data[0].Trim();
+			string dst = data[1].Trim();
 
-            string result = string.Empty;
-            IUnitType used = Processors.FirstOrDefault(processor => processor.TryProcess(src, dst, out result));
+			if (src.Length == 0 || dst.Length == 0) {
+				throw new CommandException("Unrecognized conversion app syntax.");
+			}
 
-            if (used == null){
-                throw new CommandException("Could not recognize conversion units.");
-            }
+			string result = string.Empty;
+			IUnitType used = Processors.FirstOrDefault(processor => processor.TryProcess(src, dst, out result));
 
-            return result;
-        }
-    }
+			if (used == null) {
+				throw new CommandException("Could not recognize conversion units.");
+			}
+
+			return result;
+		}
+	}
 }

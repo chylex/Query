@@ -5,154 +5,154 @@ using System.Windows.Forms;
 using Base;
 using Query.Core;
 
-namespace Query.Controls{
-    sealed partial class QueryTextBox : UserControl{
-        public event EventHandler<CommandEventArgs> CommandRan;
+namespace Query.Controls {
+	sealed partial class QueryTextBox : UserControl {
+		public event EventHandler<CommandEventArgs> CommandRan;
 
-        private CommandHistory history;
-        private Action<string> log;
+		private CommandHistory history;
+		private Action<string> log;
 
-        public QueryTextBox(){
-            InitializeComponent();
-        }
+		public QueryTextBox() {
+			InitializeComponent();
+		}
 
-        public void Setup(CommandHistory historyObj, Action<string> logFunc){
-            this.history = historyObj;
-            this.log = logFunc;
-        }
+		public void Setup(CommandHistory historyObj, Action<string> logFunc) {
+			history = historyObj;
+			log = logFunc;
+		}
 
-        private void OnCommandRan(){
-            CommandRan?.Invoke(this, new CommandEventArgs(tb.Text));
-        }
+		private void OnCommandRan() {
+			CommandRan?.Invoke(this, new CommandEventArgs(tb.Text));
+		}
 
-        private sealed class CustomTextBox : TextBox{
-            private string lastInputStr = string.Empty;
-            private int lastInputPos = 0;
-            
-            private bool doResetHistoryMemory;
-            private bool lastArrowShift;
-            private int historyOffset;
+		private sealed class CustomTextBox : TextBox {
+			private string lastInputStr = string.Empty;
+			private int lastInputPos = 0;
 
-            public CustomTextBox(){
-                TextChanged += CustomTextBox_TextChanged;
-            }
+			private bool doResetHistoryMemory;
+			private bool lastArrowShift;
+			private int historyOffset;
 
-            protected override void OnKeyDown(KeyEventArgs e){
-                QueryTextBox input = (QueryTextBox)Parent;
-                CommandHistory history = input.history;
+			public CustomTextBox() {
+				TextChanged += CustomTextBox_TextChanged;
+			}
 
-                Keys key = e.KeyCode;
-                bool handled = false;
+			protected override void OnKeyDown(KeyEventArgs e) {
+				QueryTextBox input = (QueryTextBox) Parent;
+				CommandHistory history = input.history;
 
-                switch(key){
-                    case Keys.Enter:
-                        if (Text != string.Empty){
-                            input.OnCommandRan();
+				Keys key = e.KeyCode;
+				bool handled = false;
 
-                            Text = string.Empty;
-                            doResetHistoryMemory = true;
-                            handled = true;
-                        }
+				switch (key) {
+					case Keys.Enter:
+						if (Text != string.Empty) {
+							input.OnCommandRan();
 
-                        break;
+							Text = string.Empty;
+							doResetHistoryMemory = true;
+							handled = true;
+						}
 
-                    case Keys.Up:
-                        if (lastArrowShift != e.Shift){
-                            lastArrowShift = e.Shift;
-                            historyOffset = 0;
-                        }
-                        
-                        --historyOffset;
-                        
-                        if (InsertFromHistory(e.Shift ? history.Results : history.Queries)){
-                            ++historyOffset;
-                        }
+						break;
 
-                        handled = true;
-                        break;
+					case Keys.Up:
+						if (lastArrowShift != e.Shift) {
+							lastArrowShift = e.Shift;
+							historyOffset = 0;
+						}
 
-                    case Keys.Down:
-                        if (lastArrowShift != e.Shift){
-                            lastArrowShift = e.Shift;
-                            historyOffset = 0;
-                        }
+						--historyOffset;
 
-                        ++historyOffset;
-                        
-                        if (InsertFromHistory(e.Shift ? history.Results : history.Queries)){
-                            --historyOffset;
-                        }
+						if (InsertFromHistory(e.Shift ? history.Results : history.Queries)) {
+							++historyOffset;
+						}
 
-                        handled = true;
-                        break;
+						handled = true;
+						break;
 
-                    case Keys.C:
-                        if (e.Modifiers == Keys.Control){
-                            if (SelectionLength == 0 && history.Results.Count > 0){
-                                Clipboard.SetText(history.Results.Last(), TextDataFormat.UnicodeText);
-                                input.log("Copied to clipboard.");
-                                handled = true;
-                            }
-                        }
+					case Keys.Down:
+						if (lastArrowShift != e.Shift) {
+							lastArrowShift = e.Shift;
+							historyOffset = 0;
+						}
 
-                        break;
-                }
-                
-                if (!handled && key != Keys.ControlKey && key != Keys.ShiftKey && key != Keys.Menu){
-                    doResetHistoryMemory = true;
-                }
-                
-                e.Handled = e.SuppressKeyPress = handled;
-                base.OnKeyDown(e);
-            }
+						++historyOffset;
 
-            protected override void OnKeyUp(KeyEventArgs e){
-                base.OnKeyUp(e);
+						if (InsertFromHistory(e.Shift ? history.Results : history.Queries)) {
+							--historyOffset;
+						}
 
-                if (doResetHistoryMemory){
-                    doResetHistoryMemory = false;
-                    ResetHistoryMemory();
-                }
-            }
+						handled = true;
+						break;
 
-            private void CustomTextBox_TextChanged(object sender, EventArgs e){
-                ResetHistoryMemory();
-            }
+					case Keys.C:
+						if (e.Modifiers == Keys.Control) {
+							if (SelectionLength == 0 && history.Results.Count > 0) {
+								Clipboard.SetText(history.Results.Last(), TextDataFormat.UnicodeText);
+								input.log("Copied to clipboard.");
+								handled = true;
+							}
+						}
 
-            // Management
+						break;
+				}
 
-            private void ResetHistoryMemory(){
-                lastInputStr = Text;
-                lastInputPos = SelectionStart;
-                historyOffset = 0;
-            }
+				if (!handled && key != Keys.ControlKey && key != Keys.ShiftKey && key != Keys.Menu) {
+					doResetHistoryMemory = true;
+				}
 
-            private bool InsertFromHistory(IList<string> collection){
-                if (collection.Count == 0){
-                    return true;
-                }
-                
-                int index = collection.Count + historyOffset;
-                bool wasClamped = false;
+				e.Handled = e.SuppressKeyPress = handled;
+				base.OnKeyDown(e);
+			}
 
-                if (index < 0){
-                    index = 0;
-                    wasClamped = true;
-                }
-                else if (index >= collection.Count){
-                    index = collection.Count - 1;
-                    wasClamped = true;
-                }
-                
-                TextChanged -= CustomTextBox_TextChanged;
+			protected override void OnKeyUp(KeyEventArgs e) {
+				base.OnKeyUp(e);
 
-                Text = lastInputStr.Insert(lastInputPos, collection[index]);
-                SelectionStart = lastInputPos + collection[index].Length;
-                SelectionLength = 0;
+				if (doResetHistoryMemory) {
+					doResetHistoryMemory = false;
+					ResetHistoryMemory();
+				}
+			}
 
-                TextChanged += CustomTextBox_TextChanged;
-                return wasClamped;
-            }
-        }
-    }
+			private void CustomTextBox_TextChanged(object sender, EventArgs e) {
+				ResetHistoryMemory();
+			}
+
+			// Management
+
+			private void ResetHistoryMemory() {
+				lastInputStr = Text;
+				lastInputPos = SelectionStart;
+				historyOffset = 0;
+			}
+
+			private bool InsertFromHistory(IList<string> collection) {
+				if (collection.Count == 0) {
+					return true;
+				}
+
+				int index = collection.Count + historyOffset;
+				bool wasClamped = false;
+
+				if (index < 0) {
+					index = 0;
+					wasClamped = true;
+				}
+				else if (index >= collection.Count) {
+					index = collection.Count - 1;
+					wasClamped = true;
+				}
+
+				TextChanged -= CustomTextBox_TextChanged;
+
+				Text = lastInputStr.Insert(lastInputPos, collection[index]);
+				SelectionStart = lastInputPos + collection[index].Length;
+				SelectionLength = 0;
+
+				TextChanged += CustomTextBox_TextChanged;
+				return wasClamped;
+			}
+		}
+	}
 }

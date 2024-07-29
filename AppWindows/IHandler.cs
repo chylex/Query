@@ -1,8 +1,8 @@
 ﻿using Base;
 
-namespace AppSys{
-    internal interface IHandler{
-        bool Matches(Command cmd);
-        string Handle(Command cmd);
-    }
+namespace AppSys {
+	interface IHandler {
+		bool Matches(Command cmd);
+		string Handle(Command cmd);
+	}
 }

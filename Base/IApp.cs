@@ -1,8 +1,8 @@
-﻿namespace Base{
-    public interface IApp{
-        string[] RecognizedNames { get; }
+﻿namespace Base {
+	public interface IApp {
+		string[] RecognizedNames { get; }
 
-        MatchConfidence GetConfidence(Command cmd);
-        string ProcessCommand(Command cmd);
-    }
+		MatchConfidence GetConfidence(Command cmd);
+		string ProcessCommand(Command cmd);
+	}
 }
