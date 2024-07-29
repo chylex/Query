@@ -1,21 +1,21 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Query", "Query\Query.csproj", "{1A2176AF-3885-4619-8F85-4C751A5ABA8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Query", "Query\Query.csproj", "{1A2176AF-3885-4619-8F85-4C751A5ABA8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Base\Base.csproj", "{66CF4F71-50DD-4C65-AB96-35D1193FFB50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base", "Base\Base.csproj", "{66CF4F71-50DD-4C65-AB96-35D1193FFB50}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{6434DC0B-7270-4002-857B-53F8839C9CA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCalc", "AppCalc\AppCalc.csproj", "{C7A21640-CAF3-40E8-AA6A-793181BD28AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppCalc", "AppCalc\AppCalc.csproj", "{C7A21640-CAF3-40E8-AA6A-793181BD28AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppConv", "AppConv\AppConv.csproj", "{1AC5280A-81D1-4E02-9122-DB358734FFB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppConv", "AppConv\AppConv.csproj", "{1AC5280A-81D1-4E02-9122-DB358734FFB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppMeme", "AppMeme\AppMeme.csproj", "{4E27ADC4-FCBE-451E-A1F9-8050DA22A6E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppMeme", "AppMeme\AppMeme.csproj", "{4E27ADC4-FCBE-451E-A1F9-8050DA22A6E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSys", "AppWindows\AppSys.csproj", "{E71AFA58-A144-4170-AF7B-05730C04CF59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppSys", "AppWindows\AppSys.csproj", "{E71AFA58-A144-4170-AF7B-05730C04CF59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
