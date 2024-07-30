@@ -44,7 +44,7 @@ sealed class Length : DecimalUnitConverterSimple<Length.Units> {
 		updatedStr = updatedStr.Replace("&", " ");
 		updatedStr = updatedStr.Replace(",", " ");
 
-		string inchName = NamesInch.FirstOrDefault(name => src.Contains(name, StringComparison.OrdinalIgnoreCase));
+		string? inchName = NamesInch.FirstOrDefault(name => src.Contains(name, StringComparison.OrdinalIgnoreCase));
 
 		if (inchName == null) {
 			return src;
@@ -53,7 +53,7 @@ sealed class Length : DecimalUnitConverterSimple<Length.Units> {
 		int inchIndex = src.IndexOf(inchName, StringComparison.OrdinalIgnoreCase);
 		updatedStr = updatedStr.Remove(inchIndex, inchName.Length).Insert(inchIndex, new string(' ', inchName.Length));
 
-		string footName = NamesFoot.FirstOrDefault(name => updatedStr.Contains(name, StringComparison.OrdinalIgnoreCase));
+		string? footName = NamesFoot.FirstOrDefault(name => updatedStr.Contains(name, StringComparison.OrdinalIgnoreCase));
 
 		if (footName == null) {
 			return src;

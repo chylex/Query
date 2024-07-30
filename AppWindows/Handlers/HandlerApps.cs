@@ -47,8 +47,8 @@ sealed class HandlerApps : IHandler {
 		return Mappings.ContainsKey(cmd.Text) || Substitutions.ContainsKey(cmd.Text);
 	}
 
-	public string Handle(Command cmd) {
-		if (!Substitutions.TryGetValue(cmd.Text, out string key)) {
+	public string? Handle(Command cmd) {
+		if (!Substitutions.TryGetValue(cmd.Text, out string? key)) {
 			key = cmd.Text;
 		}
 

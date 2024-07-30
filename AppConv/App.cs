@@ -38,7 +38,7 @@ public sealed class App : IApp {
 		}
 
 		string result = string.Empty;
-		IUnitType used = Processors.FirstOrDefault(processor => processor.TryProcess(src, dst, out result));
+		IUnitType? used = Processors.FirstOrDefault(processor => processor.TryProcess(src, dst, out result));
 
 		if (used == null) {
 			throw new CommandException("Could not recognize conversion units.");

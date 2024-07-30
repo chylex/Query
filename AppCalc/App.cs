@@ -34,7 +34,7 @@ public sealed partial class App : IApp {
 		return RegexValidCharacters.IsMatch(cmd.Text) ? MatchConfidence.Possible : MatchConfidence.None;
 	}
 
-	string IApp.ProcessCommand(Command cmd) {
+	string? IApp.ProcessCommand(Command cmd) {
 		return ParseAndProcessExpression(cmd.Text);
 	}
 

@@ -53,9 +53,11 @@ sealed partial class MainForm : Form {
 		}
 	}
 
-	private void MainForm_Shown(object sender, EventArgs e) {
-		Rectangle screenRect = Screen.PrimaryScreen.WorkingArea;
-		Location = new Point(screenRect.X + screenRect.Width - Width, screenRect.Y + screenRect.Height - Height);
+	private void MainForm_Shown(object? sender, EventArgs e) {
+		if (Screen.PrimaryScreen is {} primaryScreen) {
+			Rectangle screenRect = primaryScreen.WorkingArea;
+			Location = new Point(screenRect.X + screenRect.Width - Width, screenRect.Y + screenRect.Height - Height);
+		}
 
 		if (!isLoaded) {
 			isLoaded = true;
@@ -63,38 +65,38 @@ sealed partial class MainForm : Form {
 		}
 	}
 
-	private void MainForm_Deactivate(object sender, EventArgs e) {
+	private void MainForm_Deactivate(object? sender, EventArgs e) {
 		SetShown(false);
 	}
 
-	private void MainForm_Disposed(object sender, EventArgs e) {
+	private void MainForm_Disposed(object? sender, EventArgs e) {
 		keyboardHook.StopHook();
 	}
 
-	private void trayIcon_Click(object sender, EventArgs e) {
+	private void trayIcon_Click(object? sender, EventArgs e) {
 		if (((MouseEventArgs) e).Button == MouseButtons.Left) {
 			SetShown(true);
 		}
 	}
 
-	private void showToolStripMenuItem_Click(object sender, EventArgs e) {
+	private void showToolStripMenuItem_Click(object? sender, EventArgs e) {
 		SetShown(true);
 	}
 
-	private void hookToolStripMenuItem_Click(object sender, EventArgs e) {
+	private void hookToolStripMenuItem_Click(object? sender, EventArgs e) {
 		keyboardHook.StopHook();
 		keyboardHook.StartHook();
 	}
 
-	private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
+	private void exitToolStripMenuItem_Click(object? sender, EventArgs e) {
 		Application.Exit();
 	}
 
-	private void keyboardHook_Triggered(object sender, EventArgs e) {
+	private void keyboardHook_Triggered(object? sender, EventArgs e) {
 		SetShown(!Visible);
 	}
 
-	private void focusTimer_Tick(object sender, EventArgs e) {
+	private void focusTimer_Tick(object? sender, EventArgs e) {
 		WindowState = FormWindowState.Minimized;
 		Show();
 		Activate();
@@ -104,9 +106,9 @@ sealed partial class MainForm : Form {
 		focusTimer.Stop();
 	}
 
-	private void queryBox_CommandRan(object sender, CommandEventArgs e) {
+	private void queryBox_CommandRan(object? sender, CommandEventArgs e) {
 		try {
-			string result = processor.Run(e.Command);
+			string? result = processor.Run(e.Command);
 
 			if (result != null) {
 				queryLog.AddEntry("> " + e.Command.Text, QueryHistoryLog.EntryType.UserInput);

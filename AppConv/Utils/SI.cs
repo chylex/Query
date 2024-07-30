@@ -80,8 +80,8 @@ static class SI {
 	}
 
 	internal sealed class ExtededProperties {
-		public Predicate<int> FactorPredicate { get; init; }
-		public Func<int, Func<decimal>> FromFunctionGenerator { get; init; }
-		public Func<int, Func<decimal>> ToFunctionGenerator { get; init; }
+		public required Predicate<int> FactorPredicate { get; init; }
+		public required Func<int, Func<decimal>> FromFunctionGenerator { get; init; }
+		public required Func<int, Func<decimal>> ToFunctionGenerator { get; init; }
 	}
 }

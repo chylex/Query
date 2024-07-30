@@ -8,10 +8,10 @@ using Query.Core;
 namespace Query.Controls;
 
 sealed partial class QueryTextBox : UserControl {
-	public event EventHandler<CommandEventArgs> CommandRan;
+	public event EventHandler<CommandEventArgs>? CommandRan;
 
-	private CommandHistory history;
-	private Action<string> log;
+	private CommandHistory history = null!;
+	private Action<string> log = null!;
 
 	public QueryTextBox() {
 		InitializeComponent();
@@ -39,8 +39,8 @@ sealed partial class QueryTextBox : UserControl {
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e) {
-			QueryTextBox input = (QueryTextBox) Parent;
-			CommandHistory history = input!.history;
+			QueryTextBox input = (QueryTextBox) Parent!;
+			CommandHistory history = input.history;
 
 			Keys key = e.KeyCode;
 			bool handled = false;
@@ -116,7 +116,7 @@ sealed partial class QueryTextBox : UserControl {
 			}
 		}
 
-		private void CustomTextBox_TextChanged(object sender, EventArgs e) {
+		private void CustomTextBox_TextChanged(object? sender, EventArgs e) {
 			ResetHistoryMemory();
 		}
 

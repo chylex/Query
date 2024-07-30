@@ -20,7 +20,7 @@ public sealed class App : IApp {
 		return Handlers.Any(handler => handler.Matches(cmd)) ? MatchConfidence.Full : MatchConfidence.None;
 	}
 
-	public string ProcessCommand(Command cmd) {
+	public string? ProcessCommand(Command cmd) {
 		return Handlers.First(handler => handler.Matches(cmd)).Handle(cmd);
 	}
 }

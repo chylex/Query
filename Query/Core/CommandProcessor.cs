@@ -9,7 +9,7 @@ sealed class CommandProcessor {
 	private readonly Dictionary<string, IApp> appNames = new (8);
 	private readonly HashSet<IApp> appSet = [];
 
-	public Func<string, bool> SingleTokenProcessor { get; init; }
+	public Func<string, bool>? SingleTokenProcessor { get; init; }
 
 	public void AddApp<T>() where T : IApp, new() {
 		IApp app = new T();
@@ -20,12 +20,12 @@ sealed class CommandProcessor {
 		}
 	}
 
-	public string Run(Command cmd) {
-		cmd = cmd.ReplaceBrackets(match => Run(new Command(match.Groups[1].Value)));
+	public string? Run(Command cmd) {
+		cmd = cmd.ReplaceBrackets(match => Run(new Command(match.Groups[1].Value))!);
 
-		string appName = cmd.PotentialAppName;
+		string? appName = cmd.PotentialAppName;
 
-		if (appName != null && appNames.TryGetValue(appName.ToLowerInvariant(), out IApp app)) {
+		if (appName != null && appNames.TryGetValue(appName.ToLowerInvariant(), out var app)) {
 			return app.ProcessCommand(new Command(cmd.Text[(appName.Length + 1)..]));
 		}
 

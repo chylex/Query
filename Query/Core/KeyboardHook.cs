@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace Query.Core;
 
 sealed class KeyboardHook {
-	public event EventHandler Triggered;
+	public event EventHandler? Triggered;
 
 	// ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
 	private readonly NativeMethods.HookProc keyboardHookDelegate;

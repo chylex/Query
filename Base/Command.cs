@@ -10,7 +10,7 @@ public sealed class Command(string text) {
 
 	public string Text { get; } = text;
 
-	public string PotentialAppName {
+	public string? PotentialAppName {
 		get {
 			int firstSpace = Text.IndexOf(' ');
 
