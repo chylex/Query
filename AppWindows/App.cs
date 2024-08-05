@@ -6,8 +6,7 @@ namespace AppSys;
 
 public sealed class App : IApp {
 	private static readonly IHandler[] Handlers = [
-		new HandlerProcesses(),
-		new HandlerApps()
+		new HandlerProcesses()
 	];
 
 	public string[] RecognizedNames => [
