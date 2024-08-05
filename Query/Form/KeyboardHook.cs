@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace Query.Core;
+namespace Query.Form;
 
 sealed class KeyboardHook {
 	public event EventHandler? Triggered;

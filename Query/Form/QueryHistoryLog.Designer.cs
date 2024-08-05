@@ -1,4 +1,4 @@
-﻿namespace Query.Controls {
+﻿namespace Query.Form {
     partial class QueryHistoryLog {
         /// <summary> 
         /// Required designer variable.

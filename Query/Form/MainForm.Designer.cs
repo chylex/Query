@@ -1,4 +1,4 @@
-﻿namespace Query {
+﻿namespace Query.Form {
 	sealed partial class MainForm {
         /// <summary>
         /// Required designer variable.
@@ -25,8 +25,8 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.queryLog = new Query.Controls.QueryHistoryLog();
-            this.queryBox = new Query.Controls.QueryTextBox();
+            this.queryLog = new QueryHistoryLog();
+            this.queryBox = new QueryTextBox();
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuTray = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -124,8 +124,8 @@
 
         #endregion
 
-        private Query.Controls.QueryTextBox queryBox;
-        private Controls.QueryHistoryLog queryLog;
+        private QueryTextBox queryBox;
+        private QueryHistoryLog queryLog;
         private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuTray;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Base;
-using Query.Controls;
-using Query.Core;
+using Query.Command;
 
-namespace Query;
+namespace Query.Form;
 
-sealed partial class MainForm : Form {
+sealed partial class MainForm : System.Windows.Forms.Form {
 	private readonly CommandProcessor processor;
 	private readonly CommandHistory history;
 
@@ -19,14 +17,7 @@ sealed partial class MainForm : Form {
 	public MainForm() {
 		InitializeComponent();
 
-		processor = new CommandProcessor {
-			SingleTokenProcessor = ProcessSingleToken
-		};
-
-		processor.AddApp<AppCalc.App>();
-		processor.AddApp<AppConv.App>();
-		processor.AddApp<AppMeme.App>();
-		processor.AddApp<AppSys.App>();
+		processor = new CommandProcessor();
 
 		history = new CommandHistory();
 		queryBox.Setup(history, str => queryLog.AddEntry(str, QueryHistoryLog.EntryType.Information));
@@ -107,42 +98,33 @@ sealed partial class MainForm : Form {
 	}
 
 	private void queryBox_CommandRan(object? sender, CommandEventArgs e) {
-		try {
-			string? result = processor.Run(e.Command);
+		string command = e.Command;
 
-			if (result != null) {
-				queryLog.AddEntry("> " + e.Command.Text, QueryHistoryLog.EntryType.UserInput);
-				history.AddQuery(e.Command.Text);
+		if (command is "exit" or "quit") {
+			Application.Exit();
+		}
+		else if (command == "clear") {
+			queryLog.ClearEntries();
+			history.Clear();
+		}
+		else if (command == "hide") {
+			Hide();
+		}
+		else {
+			try {
+				string result = processor.Run(command);
+
+				queryLog.AddEntry("> " + command, QueryHistoryLog.EntryType.UserInput);
+				history.AddQuery(command);
 
 				queryLog.AddEntry(result, QueryHistoryLog.EntryType.CommandResult);
 				history.AddResult(result);
+			} catch (CommandException ex) {
+				queryLog.AddEntry("> " + command, QueryHistoryLog.EntryType.UserInput);
+				history.AddQuery(command);
+
+				queryLog.AddEntry(ex.Message, QueryHistoryLog.EntryType.Error);
 			}
-		} catch (CommandException ex) {
-			queryLog.AddEntry("> " + e.Command.Text, QueryHistoryLog.EntryType.UserInput);
-			history.AddQuery(e.Command.Text);
-
-			queryLog.AddEntry(ex.Message, QueryHistoryLog.EntryType.Error);
-		}
-	}
-
-	private bool ProcessSingleToken(string token) {
-		switch (token) {
-			case "exit":
-			case "quit":
-				Application.Exit();
-				return true;
-
-			case "clear":
-				queryLog.ClearEntries();
-				history.Clear();
-				return true;
-
-			case "hide":
-				Hide();
-				return true;
-
-			default:
-				return false;
 		}
 	}
 }

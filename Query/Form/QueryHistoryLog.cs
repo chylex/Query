@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Query.Controls;
+namespace Query.Form;
 
 sealed partial class QueryHistoryLog : UserControl {
 	public enum EntryType {

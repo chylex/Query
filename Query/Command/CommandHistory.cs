@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Query.Core;
+namespace Query.Command;
 
 sealed class CommandHistory {
 	private readonly List<string> queries = [];

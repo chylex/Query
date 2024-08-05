@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Base;
-using Query.Core;
+using Query.Command;
 
-namespace Query.Controls;
+namespace Query.Form;
 
 sealed partial class QueryTextBox : UserControl {
 	public event EventHandler<CommandEventArgs>? CommandRan;

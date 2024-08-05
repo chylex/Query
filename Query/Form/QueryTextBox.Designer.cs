@@ -1,4 +1,4 @@
-﻿namespace Query.Controls {
+﻿namespace Query.Form {
     partial class QueryTextBox {
         /// <summary> 
         /// Required designer variable.

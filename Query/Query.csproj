@@ -15,14 +15,13 @@
     <Compile Update="Controls\QueryTextBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Form\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\AppCalc\AppCalc.csproj" />
-    <ProjectReference Include="..\AppConv\AppConv.csproj" />
-    <ProjectReference Include="..\AppMeme\AppMeme.csproj" />
-    <ProjectReference Include="..\AppWindows\AppSys.csproj" />
-    <ProjectReference Include="..\Base\Base.csproj" />
+    <ProjectReference Include="..\Calculator\Calculator.csproj" />
   </ItemGroup>
   
   <ItemGroup>
