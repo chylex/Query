@@ -10,7 +10,6 @@ using ExtendedNumerics;
 namespace Calculator.Math;
 
 sealed class UnitUniverse(
-	Unit primaryUnit,
 	FrozenDictionary<Unit, Func<Number, Number>> unitToConversionToPrimaryUnit,
 	FrozenDictionary<Unit, Func<Number, Number>> unitToConversionFromPrimaryUnit
 ) {
@@ -61,9 +60,9 @@ sealed class UnitUniverse(
 	}
 
 	internal sealed class Builder {
+		private readonly Unit primaryUnit;
 		private readonly Dictionary<Unit, Func<Number, Number>> unitToConversionToPrimaryUnit = new (ReferenceEqualityComparer.Instance);
 		private readonly Dictionary<Unit, Func<Number, Number>> unitToConversionFromPrimaryUnit = new (ReferenceEqualityComparer.Instance);
-		private readonly Unit primaryUnit;
 
 		public Builder(Unit primaryUnit) {
 			this.primaryUnit = primaryUnit;
@@ -113,7 +112,6 @@ sealed class UnitUniverse(
 
 		public UnitUniverse Build() {
 			return new UnitUniverse(
-				primaryUnit,
 				unitToConversionToPrimaryUnit.ToFrozenDictionary(ReferenceEqualityComparer.Instance),
 				unitToConversionFromPrimaryUnit.ToFrozenDictionary(ReferenceEqualityComparer.Instance)
 			);

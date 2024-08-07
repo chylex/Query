@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Calculator.Math;
 
 namespace Calculator.Parser;
@@ -189,25 +187,23 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 
 	private bool MatchUnit([NotNullWhen(true)] out Unit? unit) {
 		int position = current;
-		
-		List<string> words = [];
-		
-		while (Match(out Token.Text? text)) {
-			words.Add(text.Value);
+
+		UnitUniverses.WordLookupTrieNode node = Units.All.UnitLookupByWords;
+
+		// ReSharper disable once AccessToModifiedClosure
+		while (Match(token => node.Children.ContainsKey(token.Value), out Token.Text? text)) {
+			node = node.Children[text.Value];
 		}
 
-		for (int i = words.Count; i > 0; i--) {
-			string unitName = string.Join(' ', words.Take(i));
+		unit = node.Unit;
 
-			if (Units.All.TryGetUnit(unitName, out unit)) {
-				current = position + i;
-				return true;
-			}
+		if (unit != null) {
+			return true;
 		}
-
-		current = position;
-		unit = null;
-		return false;
+		else {
+			current = position;
+			return false;
+		}
 	}
 
 	private bool MatchUnitConversionOperator() {
