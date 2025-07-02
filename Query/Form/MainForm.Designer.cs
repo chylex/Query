@@ -114,6 +114,8 @@
 			Text = "Query";
 			Deactivate += MainForm_Deactivate;
 			Shown += MainForm_Shown;
+			LocationChanged += MainForm_LocationChanged;
+			SizeChanged += MainForm_SizeChanged;
 			contextMenuTray.ResumeLayout(false);
 			ResumeLayout(false);
 		}
