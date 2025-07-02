@@ -43,17 +43,17 @@
 			queryLog.Location = new System.Drawing.Point(7, 8);
 			queryLog.Margin = new System.Windows.Forms.Padding(7, 8, 7, 8);
 			queryLog.Name = "queryLog";
-			queryLog.Size = new System.Drawing.Size(696, 295);
+			queryLog.Size = new System.Drawing.Size(696, 296);
 			queryLog.TabIndex = 1;
 			// 
 			// queryBox
 			// 
-			queryBox.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right));
 			queryBox.BackColor = System.Drawing.Color.FromArgb(((int) ((byte) 36)), ((int) ((byte) 36)), ((int) ((byte) 36)));
-			queryBox.Location = new System.Drawing.Point(0, 311);
+			queryBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+			queryBox.Location = new System.Drawing.Point(0, 312);
 			queryBox.Margin = new System.Windows.Forms.Padding(0);
 			queryBox.Name = "queryBox";
-			queryBox.Size = new System.Drawing.Size(709, 51);
+			queryBox.Size = new System.Drawing.Size(709, 50);
 			queryBox.TabIndex = 0;
 			// 
 			// trayIcon

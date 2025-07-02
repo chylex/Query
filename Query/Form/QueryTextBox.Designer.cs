@@ -33,10 +33,10 @@
 			tb.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			tb.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) 238));
 			tb.ForeColor = System.Drawing.Color.FromArgb(((int) ((byte) 240)), ((int) ((byte) 240)), ((int) ((byte) 240)));
-			tb.Location = new System.Drawing.Point(7, 9);
-			tb.Margin = new System.Windows.Forms.Padding(7, 8, 7, 8);
+			tb.Location = new System.Drawing.Point(11, 11);
+			tb.Margin = new System.Windows.Forms.Padding(11);
 			tb.Name = "tb";
-			tb.Size = new System.Drawing.Size(678, 28);
+			tb.Size = new System.Drawing.Size(670, 28);
 			tb.TabIndex = 0;
 			// 
 			// QueryTextBox
@@ -46,7 +46,7 @@
 			BackColor = System.Drawing.Color.FromArgb(((int) ((byte) 36)), ((int) ((byte) 36)), ((int) ((byte) 36)));
 			Controls.Add(tb);
 			Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-			Size = new System.Drawing.Size(692, 51);
+			Size = new System.Drawing.Size(692, 50);
 			ResumeLayout(false);
 			PerformLayout();
 		}
