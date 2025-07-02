@@ -35,15 +35,29 @@ public abstract record Number : IAdditionOperators<Number, Number, Number>,
 		
 		public override Number Pow(Number exponent) {
 			if (exponent is Rational { Value: {} rationalExponent }) {
-				Fraction fractionExponent = rationalExponent.GetImproperFraction();
-				if (fractionExponent.Denominator == 1 && fractionExponent.Numerator >= 0) {
+				Fraction fractionExponent = Fraction.ReduceToProperFraction(rationalExponent.GetImproperFraction());
+				
+				if (fractionExponent.Numerator >= 0 && fractionExponent.Denominator == 1) {
 					try {
 						return new Rational(BigRational.Pow(Value, fractionExponent.Numerator));
 					} catch (OverflowException) {}
 				}
+				
+				if (fractionExponent.Numerator == 1 && fractionExponent.Denominator > 1) {
+					Number result = PowAsDecimal(exponent);
+					
+					BigRational assumedPerfectPowerRoot = new BigRational(decimal.Floor(result.AsDecimal));
+					BigRational assumedPerfectPower = BigRational.Pow(assumedPerfectPowerRoot, fractionExponent.Denominator);
+					
+					return assumedPerfectPower == Value ? assumedPerfectPowerRoot : result;
+				}
 			}
 			
-			return new Decimal(AsDecimal).Pow(exponent);
+			return PowAsDecimal(exponent);
+			
+			Number PowAsDecimal(Number number) {
+				return new Decimal(AsDecimal).Pow(number);
+			}
 		}
 		
 		public override string ToString(IFormatProvider? formatProvider) {
