@@ -24,28 +24,28 @@ public readonly record struct NumberWithUnit(Number Number, Unit? Unit) : IAddit
 			throw new ArithmeticException("Cannot convert '" + Unit + "' to '" + targetUnit + "'");
 		}
 	}
-
+	
 	public string ToString(IFormatProvider? formatProvider) {
 		string number = Number.ToString(formatProvider);
 		return Unit == null ? number : number + " " + Unit;
 	}
-
+	
 	public override string ToString() {
 		return ToString(CultureInfo.InvariantCulture);
 	}
-
+	
 	public static implicit operator NumberWithUnit(Number number) {
 		return new NumberWithUnit(number, null);
 	}
-
+	
 	public static NumberWithUnit operator +(NumberWithUnit value) {
 		return value with { Number = +value.Number };
 	}
-
+	
 	public static NumberWithUnit operator -(NumberWithUnit value) {
 		return value with { Number = -value.Number };
 	}
-
+	
 	public static NumberWithUnit operator +(NumberWithUnit left, NumberWithUnit right) {
 		return Operate(left, right, Number.Add, static (leftNumber, leftUnit, rightNumber, rightUnit) => {
 			if (leftUnit == rightUnit) {
@@ -59,7 +59,7 @@ public readonly record struct NumberWithUnit(Number Number, Unit? Unit) : IAddit
 			}
 		});
 	}
-
+	
 	public static NumberWithUnit operator -(NumberWithUnit left, NumberWithUnit right) {
 		return Operate(left, right, Number.Subtract, static (leftNumber, leftUnit, rightNumber, rightUnit) => {
 			if (leftUnit == rightUnit) {
@@ -73,23 +73,23 @@ public readonly record struct NumberWithUnit(Number Number, Unit? Unit) : IAddit
 			}
 		});
 	}
-
+	
 	public static NumberWithUnit operator *(NumberWithUnit left, NumberWithUnit right) {
 		return OperateWithoutUnits(left, right, Number.Multiply, "Cannot multiply");
 	}
-
+	
 	public static NumberWithUnit operator /(NumberWithUnit left, NumberWithUnit right) {
 		return OperateWithoutUnits(left, right, Number.Divide, "Cannot divide");
 	}
-
+	
 	public static NumberWithUnit operator %(NumberWithUnit left, NumberWithUnit right) {
 		return OperateWithoutUnits(left, right, Number.Remainder, "Cannot modulo");
 	}
-
+	
 	public NumberWithUnit Pow(NumberWithUnit exponent) {
 		return OperateWithoutUnits(this, exponent, Number.Pow, "Cannot exponentiate");
 	}
-
+	
 	private static NumberWithUnit Operate(NumberWithUnit left, NumberWithUnit right, Func<Number, Number, Number> withoutUnitsOperation, Func<Number, Unit, Number, Unit, NumberWithUnit> withUnitsOperation) {
 		if (right.Unit is null) {
 			return left with { Number = withoutUnitsOperation(left.Number, right.Number) };
@@ -101,7 +101,7 @@ public readonly record struct NumberWithUnit(Number Number, Unit? Unit) : IAddit
 			return withUnitsOperation(left.Number, left.Unit, right.Number, right.Unit);
 		}
 	}
-
+	
 	private static NumberWithUnit OperateWithoutUnits(NumberWithUnit left, NumberWithUnit right, Func<Number, Number, Number> withoutUnitsOperation, string messagePrefix) {
 		return Operate(left, right, withoutUnitsOperation, (_, leftUnit, _, rightUnit) => throw new ArithmeticException(messagePrefix + " '" + leftUnit + "' and '" + rightUnit + "'"));
 	}

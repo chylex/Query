@@ -10,7 +10,7 @@ sealed class CommandProcessor {
 		new KillProcessApp(),
 		new CalculatorApp()
 	];
-
+	
 	public string Run(string command) {
 		try {
 			foreach (IApp app in apps) {
@@ -18,7 +18,7 @@ sealed class CommandProcessor {
 					return output;
 				}
 			}
-
+			
 			return "Unknown command.";
 		} catch (Exception e) {
 			throw new CommandException(e.Message, e);

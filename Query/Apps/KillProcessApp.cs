@@ -14,11 +14,11 @@ sealed class KillProcessApp : IApp {
 		}
 		
 		int succeeded = 0, failed = 0;
-
+		
 		foreach (string processName in args[1..]) {
 			try {
 				Process[] processes = Process.GetProcessesByName(processName.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase) ? processName[..^4] : processName);
-
+				
 				foreach (Process process in processes) {
 					try {
 						process.Kill();
@@ -26,21 +26,21 @@ sealed class KillProcessApp : IApp {
 					} catch {
 						++failed;
 					}
-
+					
 					process.Close();
 				}
 			} catch {
 				++failed;
 			}
 		}
-
+		
 		var build = new StringBuilder();
 		build.Append("Killed ").Append(succeeded).Append(" process").Append(succeeded == 1 ? "" : "es");
-
+		
 		if (failed > 0) {
 			build.Append(", failed ").Append(failed);
 		}
-
+		
 		output = build.Append('.').ToString();
 		return true;
 	}

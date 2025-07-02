@@ -11,7 +11,7 @@ sealed class CalculatorApp : IApp {
 		ImmutableArray<Token> tokens = new Tokenizer(command).Scan();
 		Expression expression = new Parser(tokens).Parse();
 		NumberWithUnit result = expression.Accept(new CalculatorExpressionVisitor());
-
+		
 		output = result.ToString();
 		return true;
 	}

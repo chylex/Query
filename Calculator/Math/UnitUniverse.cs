@@ -14,7 +14,7 @@ sealed class UnitUniverse(
 	FrozenDictionary<Unit, Func<Number, Number>> unitToConversionFromPrimaryUnit
 ) {
 	public ImmutableArray<Unit> AllUnits => unitToConversionToPrimaryUnit.Keys;
-
+	
 	internal bool TryConvert(Number value, Unit fromUnit, Unit toUnit, [NotNullWhen(true)] out Number? converted) {
 		if (fromUnit == toUnit) {
 			converted = value;
@@ -29,7 +29,7 @@ sealed class UnitUniverse(
 			return false;
 		}
 	}
-
+	
 	internal sealed record SI(string ShortPrefix, string LongPrefix, int Factor) {
 		internal static readonly List<SI> All = [
 			new SI("Q", "quetta", 30),
@@ -58,58 +58,58 @@ sealed class UnitUniverse(
 			new SI("q", "quecto", -30)
 		];
 	}
-
+	
 	internal sealed class Builder {
 		private readonly Unit primaryUnit;
 		private readonly Dictionary<Unit, Func<Number, Number>> unitToConversionToPrimaryUnit = new (ReferenceEqualityComparer.Instance);
 		private readonly Dictionary<Unit, Func<Number, Number>> unitToConversionFromPrimaryUnit = new (ReferenceEqualityComparer.Instance);
-
+		
 		public Builder(Unit primaryUnit) {
 			this.primaryUnit = primaryUnit;
 			AddUnit(primaryUnit, 1);
 		}
-
+		
 		public Builder AddUnit(Unit unit, Func<Number, Number> convertToPrimaryUnit, Func<Number, Number> convertFromPrimaryUnit) {
 			unitToConversionToPrimaryUnit.Add(unit, convertToPrimaryUnit);
 			unitToConversionFromPrimaryUnit.Add(unit, convertFromPrimaryUnit);
 			return this;
 		}
-
+		
 		public Builder AddUnit(Unit unit, Number amountInPrimaryUnit) {
 			return AddUnit(unit, number => number * amountInPrimaryUnit, number => number / amountInPrimaryUnit);
 		}
-
+		
 		private void AddUnitSI(SI si, Func<SI, Unit> unitFactory, Func<int, int> factorModifier) {
 			int factor = factorModifier(si.Factor);
 			BigInteger powerOfTen = BigInteger.Pow(10, System.Math.Abs(factor));
 			BigRational amountInPrimaryUnit = factor > 0 ? new BigRational(powerOfTen) : new BigRational(1, powerOfTen);
 			AddUnit(unitFactory(si), amountInPrimaryUnit);
 		}
-
+		
 		public Builder AddSI(Func<SI, Unit> unitFactory, Func<int, int> factorModifier) {
 			foreach (SI si in SI.All) {
 				AddUnitSI(si, unitFactory, factorModifier);
 			}
-
+			
 			return this;
 		}
-
+		
 		public Builder AddSI(Func<int, int> factorModifier) {
 			Unit PrefixPrimaryUnit(SI si) {
 				return new Unit(si.ShortPrefix + primaryUnit.ShortName, [..primaryUnit.LongNames.Select(longName => si.LongPrefix + longName)]);
 			}
-
+			
 			foreach (SI si in SI.All) {
 				AddUnitSI(si, PrefixPrimaryUnit, factorModifier);
 			}
-
+			
 			return this;
 		}
-
+		
 		public Builder AddSI() {
 			return AddSI(static factor => factor);
 		}
-
+		
 		public UnitUniverse Build() {
 			return new UnitUniverse(
 				unitToConversionToPrimaryUnit.ToFrozenDictionary(ReferenceEqualityComparer.Instance),

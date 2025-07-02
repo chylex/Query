@@ -7,7 +7,7 @@ public enum SimpleTokenType {
 	SLASH,
 	PERCENT,
 	CARET,
-
+	
 	LEFT_PARENTHESIS,
 	RIGHT_PARENTHESIS
 }

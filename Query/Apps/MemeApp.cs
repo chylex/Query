@@ -10,7 +10,7 @@ sealed class MemeApp : IApp {
 		{ "flip", @"(╯°□°）╯︵ ┻━┻" },
 		{ "tableflip", @"(╯°□°）╯︵ ┻━┻" }
 	};
-
+	
 	public bool TryRun(string command, [NotNullWhen(true)] out string? output) {
 		return Map.TryGetValue(command, out output);
 	}

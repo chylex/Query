@@ -9,7 +9,7 @@ sealed class UnitUniverses {
 	private readonly FrozenDictionary<Unit, UnitUniverse> unitToUniverse;
 	
 	public WordLookupTrieNode UnitLookupByWords { get; }
-
+	
 	internal UnitUniverses(params UnitUniverse[] universes) {
 		Dictionary<Unit, UnitUniverse> unitToUniverseBuilder = new (ReferenceEqualityComparer.Instance);
 		WordLookupTrieNode.Builder unitLookupByWordsBuilder = new ();
@@ -20,7 +20,7 @@ sealed class UnitUniverses {
 				unitLookupByWordsBuilder.Add(unit);
 			}
 		}
-
+		
 		unitToUniverse = unitToUniverseBuilder.ToFrozenDictionary(ReferenceEqualityComparer.Instance);
 		UnitLookupByWords = unitLookupByWordsBuilder.Build();
 	}
@@ -58,14 +58,14 @@ sealed class UnitUniverses {
 			private void Add(string name, Unit unit) {
 				Node node = root;
 				string[] words = name.Split(' ');
-
+				
 				foreach (string word in words.AsSpan(..^1)) {
 					node = node.Child(word);
 				}
 				
 				node.Children.Add(words[^1], Node.Create(unit));
 			}
-
+			
 			public WordLookupTrieNode Build() {
 				return Build(root);
 			}
