@@ -1,18 +1,19 @@
-﻿using Calculator.Math;
+﻿using System.Collections.Immutable;
+using Calculator.Math;
 using Calculator.Parser;
 
 namespace Calculator;
 
 public sealed class CalculatorExpressionVisitor : ExpressionVisitor<NumberWithUnit> {
 	public NumberWithUnit VisitNumber(Expression.Number number) {
-		return new NumberWithUnit(number.NumberToken.Value, null);
+		return number.NumberToken.Value;
 	}
 	
 	public NumberWithUnit VisitNumbersWithUnits(Expression.NumbersWithUnits numbersWithUnits) {
 		NumberWithUnit result = new Number.Rational(0);
 		
 		foreach ((Token.Number number, Unit unit) in numbersWithUnits.NumberTokensWithUnits) {
-			result += new NumberWithUnit(number.Value, unit);
+			result += new NumberWithUnit(number.Value, [ unit ]);
 		}
 		
 		return result;
@@ -51,8 +52,8 @@ public sealed class CalculatorExpressionVisitor : ExpressionVisitor<NumberWithUn
 		
 		NumberWithUnit number = Evaluate(left);
 		
-		if (number.Unit is null) {
-			return number with { Unit = right };
+		if (number.PrimaryUnit is null) {
+			return new NumberWithUnit(number.Value, [ right ]);
 		}
 		else {
 			throw new CalculatorException("Expression already has a unit, cannot assign a new unit: " + right);
@@ -60,9 +61,9 @@ public sealed class CalculatorExpressionVisitor : ExpressionVisitor<NumberWithUn
 	}
 	
 	public NumberWithUnit VisitUnitConversion(Expression.UnitConversion unitConversion) {
-		(Expression left, Unit unit) = unitConversion;
+		(Expression left, ImmutableArray<Unit> units) = unitConversion;
 		
-		return Evaluate(left).ConvertTo(unit);
+		return Evaluate(left).ConvertTo(units);
 	}
 	
 	private NumberWithUnit Evaluate(Expression expression) {

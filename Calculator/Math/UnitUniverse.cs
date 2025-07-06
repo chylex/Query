@@ -10,10 +10,15 @@ using ExtendedNumerics;
 namespace Calculator.Math;
 
 sealed class UnitUniverse(
+	string name,
 	FrozenDictionary<Unit, Func<Number, Number>> unitToConversionToPrimaryUnit,
 	FrozenDictionary<Unit, Func<Number, Number>> unitToConversionFromPrimaryUnit
 ) {
 	public ImmutableArray<Unit> AllUnits => unitToConversionToPrimaryUnit.Keys;
+	
+	internal Number Convert(Number value, Unit fromUnit, Unit toUnit) {
+		return TryConvert(value, fromUnit, toUnit, out var converted) ? converted : throw new ArgumentException("Cannot convert from " + fromUnit + " to " + toUnit);
+	}
 	
 	internal bool TryConvert(Number value, Unit fromUnit, Unit toUnit, [NotNullWhen(true)] out Number? converted) {
 		if (fromUnit == toUnit) {
@@ -30,43 +35,49 @@ sealed class UnitUniverse(
 		}
 	}
 	
+	public override string ToString() {
+		return name;
+	}
+	
 	internal sealed record SI(string ShortPrefix, string LongPrefix, int Factor) {
 		internal static readonly List<SI> All = [
-			new SI("Q", "quetta", 30),
-			new SI("R", "ronna", 27),
-			new SI("Y", "yotta", 24),
-			new SI("Z", "zetta", 21),
-			new SI("E", "exa", 18),
-			new SI("P", "peta", 15),
-			new SI("T", "tera", 12),
-			new SI("G", "giga", 9),
-			new SI("M", "mega", 6),
-			new SI("k", "kilo", 3),
-			new SI("h", "hecto", 2),
-			new SI("da", "deca", 1),
-			new SI("d", "deci", -1),
-			new SI("c", "centi", -2),
-			new SI("m", "milli", -3),
-			new SI("μ", "micro", -6),
-			new SI("n", "nano", -9),
-			new SI("p", "pico", -12),
-			new SI("f", "femto", -15),
-			new SI("a", "atto", -18),
-			new SI("z", "zepto", -21),
-			new SI("y", "yocto", -24),
-			new SI("r", "ronto", -27),
-			new SI("q", "quecto", -30)
+			new ("Q", "quetta", Factor: 30),
+			new ("R", "ronna", Factor: 27),
+			new ("Y", "yotta", Factor: 24),
+			new ("Z", "zetta", Factor: 21),
+			new ("E", "exa", Factor: 18),
+			new ("P", "peta", Factor: 15),
+			new ("T", "tera", Factor: 12),
+			new ("G", "giga", Factor: 9),
+			new ("M", "mega", Factor: 6),
+			new ("k", "kilo", Factor: 3),
+			new ("h", "hecto", Factor: 2),
+			new ("da", "deca", Factor: 1),
+			new ("d", "deci", Factor: -1),
+			new ("c", "centi", Factor: -2),
+			new ("m", "milli", Factor: -3),
+			new ("μ", "micro", Factor: -6),
+			new ("n", "nano", Factor: -9),
+			new ("p", "pico", Factor: -12),
+			new ("f", "femto", Factor: -15),
+			new ("a", "atto", Factor: -18),
+			new ("z", "zepto", Factor: -21),
+			new ("y", "yocto", Factor: -24),
+			new ("r", "ronto", Factor: -27),
+			new ("q", "quecto", Factor: -30),
 		];
 	}
 	
 	internal sealed class Builder {
+		private readonly string name;
 		private readonly Unit primaryUnit;
 		private readonly Dictionary<Unit, Func<Number, Number>> unitToConversionToPrimaryUnit = new (ReferenceEqualityComparer.Instance);
 		private readonly Dictionary<Unit, Func<Number, Number>> unitToConversionFromPrimaryUnit = new (ReferenceEqualityComparer.Instance);
 		
-		public Builder(Unit primaryUnit) {
+		public Builder(string name, Unit primaryUnit) {
+			this.name = name;
 			this.primaryUnit = primaryUnit;
-			AddUnit(primaryUnit, 1);
+			AddUnit(primaryUnit, amountInPrimaryUnit: 1);
 		}
 		
 		public Builder AddUnit(Unit unit, Func<Number, Number> convertToPrimaryUnit, Func<Number, Number> convertFromPrimaryUnit) {
@@ -81,8 +92,8 @@ sealed class UnitUniverse(
 		
 		private void AddUnitSI(SI si, Func<SI, Unit> unitFactory, Func<int, int> factorModifier) {
 			int factor = factorModifier(si.Factor);
-			BigInteger powerOfTen = BigInteger.Pow(10, System.Math.Abs(factor));
-			BigRational amountInPrimaryUnit = factor > 0 ? new BigRational(powerOfTen) : new BigRational(1, powerOfTen);
+			BigInteger powerOfTen = BigInteger.Pow(value: 10, System.Math.Abs(factor));
+			BigRational amountInPrimaryUnit = factor > 0 ? new BigRational(powerOfTen) : new BigRational(numerator: 1, powerOfTen);
 			AddUnit(unitFactory(si), amountInPrimaryUnit);
 		}
 		
@@ -112,6 +123,7 @@ sealed class UnitUniverse(
 		
 		public UnitUniverse Build() {
 			return new UnitUniverse(
+				name,
 				unitToConversionToPrimaryUnit.ToFrozenDictionary(ReferenceEqualityComparer.Instance),
 				unitToConversionFromPrimaryUnit.ToFrozenDictionary(ReferenceEqualityComparer.Instance)
 			);

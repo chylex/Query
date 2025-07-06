@@ -49,7 +49,7 @@ public abstract record Expression {
 		}
 	}
 	
-	public sealed record UnitConversion(Expression Left, Unit Unit) : Expression {
+	public sealed record UnitConversion(Expression Left, ImmutableArray<Unit> Units) : Expression {
 		public override T Accept<T>(ExpressionVisitor<T> visitor) {
 			return visitor.VisitUnitConversion(this);
 		}

@@ -12,17 +12,17 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 	
 	private static readonly ImmutableArray<SimpleTokenType> PLUS_MINUS = [
 		SimpleTokenType.PLUS,
-		SimpleTokenType.MINUS
+		SimpleTokenType.MINUS,
 	];
 	
 	private static readonly ImmutableArray<SimpleTokenType> STAR_SLASH_PERCENT = [
 		SimpleTokenType.STAR,
 		SimpleTokenType.SLASH,
-		SimpleTokenType.PERCENT
+		SimpleTokenType.PERCENT,
 	];
 	
 	private static readonly ImmutableArray<SimpleTokenType> CARET = [
-		SimpleTokenType.CARET
+		SimpleTokenType.CARET,
 	];
 	
 	private bool Match(SimpleTokenType expectedTokenType, [NotNullWhen(true)] out Token.Simple? token) {
@@ -51,6 +51,15 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 	public Expression Parse() {
 		Expression term = Term();
 		
+		if (Match<Token.Text>(static text => text.Value is "to" or "in", out _)) {
+			if (MatchOneOrMoreUnits(out ImmutableArray<Unit> units)) {
+				term = new Expression.UnitConversion(term, units);
+			}
+			else {
+				throw new ParseException("Expected one or more unit literals");
+			}
+		}
+		
 		if (!IsEOF) {
 			throw new ParseException("Incomplete expression");
 		}
@@ -67,7 +76,7 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 	}
 	
 	private Expression Exponentiation() {
-		return Binary(Conversion, CARET);
+		return Binary(Unary, CARET);
 	}
 	
 	private Expression Binary(Func<Expression> term, ImmutableArray<SimpleTokenType> expectedTokenTypes) {
@@ -76,20 +85,6 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 		while (Match(expectedTokenTypes, out Token.Simple? op)) {
 			Expression right = term();
 			left = new Expression.Binary(left, op, right);
-		}
-		
-		return left;
-	}
-	
-	private Expression Conversion() {
-		Expression left = Unary();
-		
-		while (MatchUnitConversionOperator()) {
-			if (!MatchUnit(out Unit? unit)) {
-				throw new ParseException("Expected a unit literal");
-			}
-			
-			left = new Expression.UnitConversion(left, unit);
 		}
 		
 		return left;
@@ -152,17 +147,6 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 			throw new ParseException("Expected ')' after expression.");
 		}
 		
-		int position = current;
-		
-		if (MatchUnitConversionOperator()) {
-			if (MatchUnit(out Unit? toUnit)) {
-				return new Expression.UnitConversion(term, toUnit);
-			}
-			else {
-				current = position;
-			}
-		}
-		
 		if (MatchUnit(out Unit? unit)) {
 			return new Expression.UnitAssignment(term, unit);
 		}
@@ -185,6 +169,23 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 		return true;
 	}
 	
+	private bool MatchOneOrMoreUnits(out ImmutableArray<Unit> units) {
+		if (!MatchUnit(out Unit? nextUnit)) {
+			units = ImmutableArray<Unit>.Empty;
+			return false;
+		}
+		
+		var result = ImmutableArray.CreateBuilder<Unit>();
+		
+		do {
+			result.Add(nextUnit);
+			Match<Token.Text>(static text => text.Value is "and", out _);
+		} while (MatchUnit(out nextUnit));
+		
+		units = result.ToImmutable();
+		return true;
+	}
+	
 	private bool MatchUnit([NotNullWhen(true)] out Unit? unit) {
 		int position = current;
 		
@@ -204,9 +205,5 @@ public sealed class Parser(ImmutableArray<Token> tokens) {
 			current = position;
 			return false;
 		}
-	}
-	
-	private bool MatchUnitConversionOperator() {
-		return Match<Token.Text>(static text => text.Value is "to" or "in", out _);
 	}
 }

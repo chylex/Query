@@ -16,12 +16,20 @@ public abstract record Number : IAdditionOperators<Number, Number, Number>,
                                 IUnaryPlusOperators<Number, Number>,
                                 IUnaryNegationOperators<Number, Number>,
                                 IAdditiveIdentity<Number, Number.Rational>,
-                                IMultiplicativeIdentity<Number, Number.Rational> {
+                                IMultiplicativeIdentity<Number, Number.Rational>,
+                                IComparable<Number> {
 	protected abstract decimal AsDecimal { get; }
+	
+	public abstract Number WholePart { get; }
+	public abstract bool IsZero { get; }
 	
 	public abstract Number Pow(Number exponent);
 	
 	public abstract string ToString(IFormatProvider? formatProvider);
+	
+	public virtual int CompareTo(Number? other) {
+		return AsDecimal.CompareTo(other?.AsDecimal);
+	}
 	
 	public sealed override string ToString() {
 		return ToString(CultureInfo.InvariantCulture);
@@ -32,6 +40,9 @@ public abstract record Number : IAdditionOperators<Number, Number, Number>,
 	/// </summary>
 	public sealed record Rational(BigRational Value) : Number {
 		protected override decimal AsDecimal => (decimal) Value;
+		
+		public override Rational WholePart => new (Value.WholePart);
+		public override bool IsZero => Value.IsZero;
 		
 		public override Number Pow(Number exponent) {
 			if (exponent is Rational { Value: {} rationalExponent }) {
@@ -64,6 +75,15 @@ public abstract record Number : IAdditionOperators<Number, Number, Number>,
 			Fraction fraction = Value.GetImproperFraction();
 			return fraction.Denominator == 1 ? fraction.Numerator.ToString(formatProvider) : AsDecimal.ToString(formatProvider);
 		}
+		
+		public override int CompareTo(Number? other) {
+			if (other is Rational rational) {
+				return Value.CompareTo(rational.Value);
+			}
+			else {
+				return base.CompareTo(other);
+			}
+		}
 	}
 	
 	/// <summary>
@@ -73,6 +93,9 @@ public abstract record Number : IAdditionOperators<Number, Number, Number>,
 		public Decimal(double value) : this((decimal) value) {}
 		
 		protected override decimal AsDecimal => Value;
+		
+		public override Decimal WholePart => new (decimal.Floor(Value));
+		public override bool IsZero => Value == 0;
 		
 		public override Number Pow(Number exponent) {
 			double doubleValue = (double) Value;

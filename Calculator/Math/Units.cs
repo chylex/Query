@@ -26,7 +26,7 @@ static class Units {
 		var day = hour * 24;
 		var week = day * 7;
 		
-		return new UnitUniverse.Builder(new Unit("s", Pluralize("second")))
+		return new UnitUniverse.Builder("Time", new Unit("s", Pluralize("second")))
 		       .AddUnit(new Unit("min", Pluralize("minute")), minute)
 		       .AddUnit(new Unit("h", Pluralize("hour")), hour)
 		       .AddUnit(new Unit("d", Pluralize("day")), day)
@@ -42,7 +42,7 @@ static class Units {
 		var nauticalMile = 1_852;
 		var lightYear = 9_460_730_472_580_800;
 		
-		return new UnitUniverse.Builder(new Unit("m", Pluralize("meter", "metre")))
+		return new UnitUniverse.Builder("Length", new Unit("m", Pluralize("meter", "metre")))
 		       .AddSI()
 		       .AddUnit(new Unit("in", [ "inch", "inches", "\"" ]), inch)
 		       .AddUnit(new Unit("ft", [ "foot", "feet", "'" ]), foot)
@@ -59,7 +59,7 @@ static class Units {
 		var ounce = pound / 16;
 		var dram = ounce / 16;
 		
-		return new UnitUniverse.Builder(new Unit("g", Pluralize("gram")))
+		return new UnitUniverse.Builder("Mass", new Unit("g", Pluralize("gram")))
 		       .AddSI()
 		       .AddUnit(new Unit("lb", [ "lbs", "pound", "pounds" ]), pound)
 		       .AddUnit(new Unit("st", Pluralize("stone")), stone)
@@ -81,10 +81,10 @@ static class Units {
 			]);
 		}
 		
-		return new UnitUniverse.Builder(SquareMeter(string.Empty, string.Empty))
+		return new UnitUniverse.Builder("Area", SquareMeter(string.Empty, string.Empty))
 		       .AddSI(static si => SquareMeter(si.ShortPrefix, si.LongPrefix), static factor => factor * 2)
-		       .AddUnit(new Unit("a", Pluralize("are")), 100)
-		       .AddUnit(new Unit("ha", Pluralize("hectare")), 10_000);
+		       .AddUnit(new Unit("a", Pluralize("are")), amountInPrimaryUnit: 100)
+		       .AddUnit(new Unit("ha", Pluralize("hectare")), amountInPrimaryUnit: 10_000);
 	}
 	
 	private static UnitUniverse.Builder VolumeUniverse() {
@@ -100,42 +100,42 @@ static class Units {
 			]);
 		}
 		
-		return new UnitUniverse.Builder(new Unit("l", Pluralize("litre", "liter")))
+		return new UnitUniverse.Builder("Volume", new Unit("l", Pluralize("litre", "liter")))
 		       .AddSI()
-		       .AddUnit(CubicMeter(string.Empty, string.Empty), 1000)
+		       .AddUnit(CubicMeter(string.Empty, string.Empty), amountInPrimaryUnit: 1000)
 		       .AddSI(static si => CubicMeter(si.ShortPrefix, si.LongPrefix), static factor => (factor * 3) + 3);
 	}
 	
 	private static UnitUniverse.Builder AngleUniverse() {
-		return new UnitUniverse.Builder(new Unit("deg", [ "°", "degree", "degrees" ]))
+		return new UnitUniverse.Builder("Angle", new Unit("deg", [ "°", "degree", "degrees" ]))
 		       .AddUnit(new Unit("rad", Pluralize("radian")), new Number.Decimal((decimal) System.Math.PI / 180M))
-		       .AddUnit(new Unit("grad", Pluralize("gradian", "grade", "gon")), Ratio(9, 10));
+		       .AddUnit(new Unit("grad", Pluralize("gradian", "grade", "gon")), Ratio(numerator: 9, denominator: 10));
 	}
 	
 	private static BigRational KelvinOffset { get; } = Parse("273", "15");
 	
 	private static UnitUniverse.Builder TemperatureUniverse() {
-		return new UnitUniverse.Builder(new Unit("°C", [ "C", "Celsius", "celsius" ]))
-		       .AddUnit(new Unit("°F", [ "F", "Fahrenheit", "fahrenheit" ]), static f => (f - 32) * Ratio(5, 9), static c => c * Ratio(9, 5) + 32)
+		return new UnitUniverse.Builder("Temperature", new Unit("°C", [ "C", "Celsius", "celsius" ]))
+		       .AddUnit(new Unit("°F", [ "F", "Fahrenheit", "fahrenheit" ]), static f => (f - 32) * Ratio(numerator: 5, denominator: 9), static c => c * Ratio(numerator: 9, denominator: 5) + 32)
 		       .AddUnit(new Unit("K", [ "Kelvin", "kelvin" ]), static k => k - KelvinOffset, static c => c + KelvinOffset);
 	}
 	
 	private static UnitUniverse.Builder InformationEntropyUniverse() {
-		var bit = Ratio(1, 8);
+		var bit = Ratio(numerator: 1, denominator: 8);
 		var nibble = bit * 4;
 		
-		return new UnitUniverse.Builder(new Unit("B", Pluralize("byte")))
+		return new UnitUniverse.Builder("Information Entropy", new Unit("B", Pluralize("byte")))
 		       .AddSI()
 		       .AddUnit(new Unit("b", Pluralize("bit")), bit)
 		       .AddUnit(new Unit("nibbles", [ "nibble" ]), nibble)
-		       .AddUnit(new Unit("KiB", Pluralize("kibibyte")), Pow(1024, 1))
-		       .AddUnit(new Unit("MiB", Pluralize("mebibyte")), Pow(1024, 2))
-		       .AddUnit(new Unit("GiB", Pluralize("gibibyte")), Pow(1024, 3))
-		       .AddUnit(new Unit("TiB", Pluralize("tebibyte")), Pow(1024, 4))
-		       .AddUnit(new Unit("PiB", Pluralize("pebibyte")), Pow(1024, 5))
-		       .AddUnit(new Unit("EiB", Pluralize("exbibyte")), Pow(1024, 6))
-		       .AddUnit(new Unit("ZiB", Pluralize("zebibyte")), Pow(1024, 7))
-		       .AddUnit(new Unit("YiB", Pluralize("yobibyte")), Pow(1024, 8));
+		       .AddUnit(new Unit("KiB", Pluralize("kibibyte")), Pow(value: 1024, exponent: 1))
+		       .AddUnit(new Unit("MiB", Pluralize("mebibyte")), Pow(value: 1024, exponent: 2))
+		       .AddUnit(new Unit("GiB", Pluralize("gibibyte")), Pow(value: 1024, exponent: 3))
+		       .AddUnit(new Unit("TiB", Pluralize("tebibyte")), Pow(value: 1024, exponent: 4))
+		       .AddUnit(new Unit("PiB", Pluralize("pebibyte")), Pow(value: 1024, exponent: 5))
+		       .AddUnit(new Unit("EiB", Pluralize("exbibyte")), Pow(value: 1024, exponent: 6))
+		       .AddUnit(new Unit("ZiB", Pluralize("zebibyte")), Pow(value: 1024, exponent: 7))
+		       .AddUnit(new Unit("YiB", Pluralize("yobibyte")), Pow(value: 1024, exponent: 8));
 	}
 	
 	private static BigRational Parse(string integerPart, string fractionalPart) {
