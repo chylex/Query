@@ -64,7 +64,7 @@ sealed partial class MainForm : System.Windows.Forms.Form {
 	private bool isMoving = false;
 	
 	private void FixLocation() {
-		if (!isMoving && Screen.FromControl(this) is {} screen) {
+		if (!isMoving && WindowState != FormWindowState.Minimized && Screen.FromControl(this) is {} screen) {
 			Rectangle screenRect = screen.WorkingArea;
 			isMoving = true;
 			Location = new Point(screenRect.X + screenRect.Width - Width, screenRect.Y + screenRect.Height - Height);
@@ -104,8 +104,10 @@ sealed partial class MainForm : System.Windows.Forms.Form {
 	}
 	
 	private void focusTimer_Tick(object? sender, EventArgs e) {
+		WindowState = FormWindowState.Minimized;
 		Show();
 		Activate();
+		WindowState = FormWindowState.Normal;
 		
 		queryBox.Focus();
 		focusTimer.Stop();
