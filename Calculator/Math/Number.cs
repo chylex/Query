@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using ExtendedNumerics;
 
@@ -72,8 +73,23 @@ public abstract record Number : IAdditionOperators<Number, Number, Number>,
 		}
 		
 		public override string ToString(IFormatProvider? formatProvider) {
-			Fraction fraction = Value.GetImproperFraction();
-			return fraction.Denominator == 1 ? fraction.Numerator.ToString(formatProvider) : AsDecimal.ToString(formatProvider);
+			BigRational value = Fraction.ReduceToProperFraction(Value.GetImproperFraction());
+			string wholePartStr = value.WholePart.ToString(formatProvider);
+			
+			if (value.FractionalPart.IsZero) {
+				return wholePartStr;
+			}
+			
+			decimal fractionalPart = (decimal) value.FractionalPart;
+			
+			if (fractionalPart == 0) {
+				return wholePartStr + ".0...";
+			}
+			
+			string decimalPartStr = fractionalPart.ToString(formatProvider);
+			int decimalSeparatorIndex = decimalPartStr.TakeWhile(char.IsAsciiDigit).Count();
+			
+			return wholePartStr + decimalPartStr[decimalSeparatorIndex..];
 		}
 		
 		public override int CompareTo(Number? other) {
